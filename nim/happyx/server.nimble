@@ -10,7 +10,7 @@ bin = @["hpx"]
 
 # Dependencies
 
-requires "happyx >= 2.11 & < 2.12"
+requires "happyx >= 3.3 & < 3.4"
 requires "cligen"
 requires "regex"
 requires "httpx"

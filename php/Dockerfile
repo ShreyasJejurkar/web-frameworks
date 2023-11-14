@@ -1,6 +1,7 @@
-FROM php:{{#language.version}}{{{.}}}{{/language.version}}-fpm-alpine3.16
+FROM php:8.2-fpm
 
-RUN apk add git zlib-dev libzip-dev build-base autoconf nginx openrc curl-dev icu-dev oniguruma-dev linux-headers {{#deps}} {{{.}}} {{/deps}}
+RUN apt-get -qq update
+RUN apt-get -qy install libzip-dev {{#deps}} {{{.}}} {{/deps}}
 
 WORKDIR /usr/src/app
 
@@ -11,7 +12,7 @@ RUN docker-php-ext-install zip opcache
 {{/environment}}
 
 {{#build_deps}}
-  RUN apk add {{{.}}}
+  RUN apt-get -qy install {{{.}}}
 {{/build_deps}}
 
 {{#modules}}
@@ -67,7 +68,7 @@ RUN if [[ -f "${EVENT_EXT_FILE}" ]] ; then \
   
   RUN rm -fr /usr/local/etc/php-fpm.d/zz-docker.conf
   
-  RUN echo -e 'server {\n\
+  RUN echo 'server {\n\
       {{#docroot}}
         root {{{.}}};\n\
       {{/docroot}}
@@ -87,9 +88,9 @@ RUN if [[ -f "${EVENT_EXT_FILE}" ]] ; then \
         }\n\
       {{/nginx_conf}}
   }\n'\
-  > /etc/nginx/http.d/default.conf
+  > /etc/nginx/conf.d/server.conf
   
-  RUN echo -e 'opcache.enable=1\n\
+  RUN echo 'opcache.enable=1\n\
   opcache.memory_consumption=512\n\
   opcache.interned_strings_buffer=64\n\
   opcache.max_accelerated_sources=32531\n\
